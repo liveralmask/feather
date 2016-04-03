@@ -14,12 +14,12 @@ var icecrepe = icecrepe || {};
 })(icecrepe.application = icecrepe.application || {});
 
 chrome.extension.onMessage.addListener( function( request, sender, responseMethod ){
-  var response = undefined;
+  var response = null;
   if ( "method" in request ){
     if ( ! ( "args" in request ) ) request.args = [];
     response = opjs.method.call( global, request.method, request.args );
   }
-  if ( undefined === response ) return;
+  if ( null === response ) return;
   
   responseMethod( response );
 });
