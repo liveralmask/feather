@@ -2,6 +2,7 @@
 
 var global = this;
 var icecrepe = icecrepe || {};
+opjs.dom.document( document );
 
 (function( application ){
   application.eval = function( code ){
@@ -9,7 +10,7 @@ var icecrepe = icecrepe || {};
   };
   
   application.xpath = function( code ){
-    
+    return opjs.dom.xpath.html( code );
   };
 })(icecrepe.application = icecrepe.application || {});
 

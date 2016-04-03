@@ -1,6 +1,7 @@
 //alert( "popup" );
 
 var bg = chrome.extension.getBackgroundPage();
+opjs.dom.document( document );
 
 var type_eval = opjs.dom.element.get( "type-eval" );
 type_eval.checked = true;
@@ -19,7 +20,9 @@ var popup = popup || {};
   };
   
   action.xpath = function(){
-    bg.xpath( opjs.dom.element.get( "code" ).value );
+    bg.xpath( opjs.dom.element.get( "code" ).value, function( response ){
+      opjs.dom.element.text( result, response );
+    } );
   };
 })(popup.action = popup.action || {});
 

@@ -500,12 +500,12 @@ opjs.Log.prototype.write = function( type, msg ){};
     return opjs.dom.document().getElementsByName( name );
   };
   
-  element.add = function( _parent, _child ){
-    _parent.appendChild( _child );
+  element.add = function( parent, child ){
+    parent.appendChild( child );
   };
   
-  element.remove = function( _parent, _child ){
-    _parent.removeChild( _child );
+  element.remove = function( parent, child ){
+    parent.removeChild( child );
   };
   
   element.removes = function( _element ){
@@ -514,3 +514,10 @@ opjs.Log.prototype.write = function( type, msg ){};
     }
   };
 })(opjs.dom.element = opjs.dom.element || {});
+
+(function( xpath ){
+  xpath.html = function( expression, parent ){
+    if ( opjs.is_undef( parent ) ) parent = opjs.dom.document();
+    return opjs.dom.document().evaluate( expression, parent, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null );
+  };
+})(opjs.dom.xpath = opjs.dom.xpath || {});
