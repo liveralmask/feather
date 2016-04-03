@@ -12,6 +12,6 @@
   },
   "content_scripts" : [{
     "matches" : [ "<all_urls>" ],
-    "js" : [ "scripts/icecrepe.js" ]
+    "js" : [ "scripts/opjs.js", "scripts/icecrepe.js" ]
   }]
 }

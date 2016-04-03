@@ -7,9 +7,6 @@ bg.send_request = function( request, callback ){
     var tab = tabs[ 0 ];
     
     chrome.tabs.sendMessage( tab.id, request, function( response ){
-      if ( typeof response === "undefined" ) return;
-      if ( typeof callback === "undefined" ) return;
-      
       callback( response );
     } );
   });
@@ -18,8 +15,8 @@ bg.send_request = function( request, callback ){
 bg.eval = function( code, callback ){
   bg.send_request(
     {
-      "method" : "icecrepe.application.eval",
-      "args" : [ code ]
+      method : "icecrepe.application.eval",
+      args   : [ code ]
     },
     callback
   );
@@ -28,8 +25,8 @@ bg.eval = function( code, callback ){
 bg.xpath = function( code, callback ){
   bg.send_request(
     {
-      "method" : "icecrepe.application.xpath",
-      "args" : [ code ]
+      method : "icecrepe.application.xpath",
+      args   : [ code ]
     },
     callback
   );
