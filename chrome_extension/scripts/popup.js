@@ -1,42 +1,95 @@
 //alert( "popup" );
 
 var bg = chrome.extension.getBackgroundPage();
-opjs.dom.document( document );
-
-var type_eval = opjs.dom.element.get( "type-eval" );
-type_eval.checked = true;
-
-var result = opjs.dom.element.get( "result" );
+opjs.document.set( document );
+var table_attributes = {
+  "table" : {
+    "style" : "border: thin solid gray; border-collapse: collapse; margin: 5px"
+  },
+  "head" : {
+    "style" : "border: thin solid gray"
+  },
+  "foot" : {
+    "style" : "border: thin solid gray"
+  },
+  "body" : {
+    "style" : "border: thin solid gray"
+  }
+};
+var number_attributes = {
+  "style" : "text-align: center"
+};
 
 var popup = popup || {};
 
 (function( action ){
-  action.eval = function(){
-    bg.eval( opjs.dom.element.get( "code" ).value, function( response ){
-      if ( "msg" in response ){
-        opjs.dom.element.add( result, opjs.dom.element.create( "font", { "style" : "color:red" }, { "text" : response.msg } ) );
-      }
+  action.expression = function(){
+    return opjs.document.element.get( "icecrepe.expression" ).value;
+  };
+  
+  action.clear = function(){
+    bg.call( "icecrepe.application.clear", [ "icecrepe.result" ], function( response ){} );
+  };
+  
+  action.xpath = function( expression ){
+    bg.call( "icecrepe.application.xpath", [ expression ], function( response ){
+      var result = opjs.document.element.create( "div" );
+      var text = opjs.document.element.create( "text", {}, { "text" : "TEXT" } );
+      opjs.document.element.add( result, text );
+      bg.call( "icecrepe.application.insert_result", [ "icecrepe.result", result.innerHTML ], function( response ){} );
     } );
   };
   
-  action.xpath = function(){
-    bg.xpath( opjs.dom.element.get( "code" ).value, function( response ){
-      opjs.dom.element.text( result, response );
+  action.regex = function( expression ){
+    bg.call( "icecrepe.application.regex", [ expression ], function( response ){
+      var div = opjs.document.element.create( "div" );
+      opjs.document.element.add( div, action.expression_table( expression ) );
+      opjs.document.element.add( div, action.regex_matches_table( expression, response ) );
+      bg.call( "icecrepe.application.insert_result", [ "icecrepe.result", div.innerHTML ], function( response ){} );
     } );
+  };
+  
+  action.expression_table = function( expression ){
+    var body = [[ { "text" : "Expression" }, { "text" : expression } ]];
+    return opjs.document.element.array_to_table( body, undefined, undefined, table_attributes );
+  };
+  
+  action.regex_matches_table = function( expression, response ){
+    var tables = [];
+    opjs.array.each( response, function( matches, i ){
+      var div = opjs.document.element.create( "div" );
+      var body = [];
+      opjs.array.each( opjs.json.decode( matches ), function( match, i ){
+        body.push( [ { "text" : i, "attributes" : number_attributes }, { "text" : match } ] );
+      });
+      opjs.document.element.add( div, opjs.document.element.array_to_table( body, undefined, undefined, table_attributes ) );
+      tables.push( [ { "text" : tables.length + 1, "attributes" : number_attributes }, { "html" : div.innerHTML } ] );
+    });
+    if ( 0 === tables.length ){
+      tables.push( [ { "text" : 1 }, { "text" : opjs.string.format( "Unmatched: {0}", expression ) } ] );
+    }
+    return opjs.document.element.array_to_table( tables, [ "No.", "Matches" ], undefined, table_attributes );
   };
 })(popup.action = popup.action || {});
 
-opjs.dom.element.get( "execute" ).onclick = function(){
-  opjs.dom.element.removes( result );
+opjs.document.event.add( document, "DOMContentLoaded", function(){
+  opjs.document.element.attr( opjs.document.element.get( "icecrepe.expression" ), "style", "width: 500px" );
   
-  var types = opjs.dom.element.gets( "type" );
-  var types_len = types.length;
-  for ( var i = 0; i < types_len; ++i ){
-    var type = types[ i ];
+  opjs.document.event.add( opjs.document.element.get( "icecrepe.xpath" ), "click", function(){
+    popup.action.clear();
     
-    if ( type.checked ){
-      popup.action[ type.value ]();
-      break;
-    }
-  }
-};
+    var expression = popup.action.expression();
+    if ( "" !== expression ) popup.action.xpath( expression );
+  });
+  
+  opjs.document.event.add( opjs.document.element.get( "icecrepe.regex" ), "click", function(){
+    popup.action.clear();
+    
+    var expression = popup.action.expression();
+    if ( "" !== expression ) popup.action.regex( expression );
+  });
+  
+  opjs.document.event.add( opjs.document.element.get( "icecrepe.clear" ), "click", function(){
+    popup.action.clear();
+  });
+});

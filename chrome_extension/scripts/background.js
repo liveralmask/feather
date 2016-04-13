@@ -2,7 +2,7 @@
 
 var bg = this;
 
-bg.send_request = function( request, callback ){
+bg.content = function( request, callback ){
   chrome.tabs.query( { "active" : true, "lastFocusedWindow" : true }, function( tabs ){
     var tab = tabs[ 0 ];
     
@@ -12,22 +12,10 @@ bg.send_request = function( request, callback ){
   });
 };
 
-bg.eval = function( code, callback ){
-  bg.send_request(
+bg.call = function( method, args, callback ){
+  bg.content(
     {
-      "method" : "icecrepe.application.eval",
-      "args"   : [ code ]
-    },
-    callback
-  );
-};
-
-bg.xpath = function( code, callback ){
-  bg.send_request(
-    {
-      "method" : "icecrepe.application.xpath",
-      "args"   : [ code ]
-    },
-    callback
-  );
+      "method" : method,
+      "args"   : args
+    }, callback );
 };

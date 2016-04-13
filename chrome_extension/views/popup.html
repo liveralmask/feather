@@ -2,26 +2,17 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <link rel="stylesheet" type="text/css" href="../views/popup.css">
+  <script type="text/javascript" src="../scripts/opjs.js"></script>
+  <script type="text/javascript" src="../scripts/popup.js"></script>
 </head>
 <body>
-  <form>
-    <div>
-      <div>
-        <input id="type-eval"  type="radio" name="type" value="eval">eval</input>
-        <input id="type-xpath" type="radio" name="type" value="xpath">xpath</input>
-      </div>
-      <div>
-        <textarea id="code" ></textarea>
-      </div>
-      <div>
-        <input id="execute" type="button" value="execute"></input>
-      </div>
-      <div id="result"></div>
-    </div>
-  </form>
-  
-  <script src="../scripts/opjs.js"></script>
-  <script src="../scripts/popup.js"></script>
+  <div>
+    <form>
+      <input type="text" id="icecrepe.expression"></input>
+      <input type="button" value="xpath" id="icecrepe.xpath"></input>
+      <input type="button" value="regex" id="icecrepe.regex"></input>
+      <input type="button" value="clear" id="icecrepe.clear"></input>
+    </form>
+  </div>
 </body>
 </html>
