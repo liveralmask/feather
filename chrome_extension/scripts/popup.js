@@ -33,10 +33,10 @@ var popup = popup || {};
   
   action.xpath = function( expression ){
     bg.call( "icecrepe.application.xpath", [ expression ], function( response ){
-      var result = opjs.document.element.create( "div" );
-      var text = opjs.document.element.create( "text", {}, { "text" : "TEXT" } );
-      opjs.document.element.add( result, text );
-      bg.call( "icecrepe.application.insert_result", [ "icecrepe.result", result.innerHTML ], function( response ){} );
+      var div = opjs.document.element.create( "div" );
+      opjs.document.element.add( div, action.expression_table( expression ) );
+      opjs.document.element.add( div, action.xpath_matches_table( expression, opjs.json.decode( response ) ) );
+      bg.call( "icecrepe.application.insert_result", [ "icecrepe.result", div.innerHTML ], function( response ){} );
     } );
   };
   
@@ -44,7 +44,7 @@ var popup = popup || {};
     bg.call( "icecrepe.application.regex", [ expression ], function( response ){
       var div = opjs.document.element.create( "div" );
       opjs.document.element.add( div, action.expression_table( expression ) );
-      opjs.document.element.add( div, action.regex_matches_table( expression, response ) );
+      opjs.document.element.add( div, action.regex_matches_table( expression, opjs.json.decode( response ) ) );
       bg.call( "icecrepe.application.insert_result", [ "icecrepe.result", div.innerHTML ], function( response ){} );
     } );
   };
@@ -52,6 +52,20 @@ var popup = popup || {};
   action.expression_table = function( expression ){
     var body = [[ { "text" : "Expression" }, { "text" : expression } ]];
     return opjs.document.element.array_to_table( body, undefined, undefined, table_attributes );
+  };
+  
+  action.xpath_matches_table = function( expression, response ){
+    var tables = [];
+    opjs.array.each( response, function( result, i ){
+      var div = opjs.document.element.create( "div" );
+      opjs.document.element.add( div, opjs.document.element.create( result.name, result.attributes, { "text" : result.content } ) );
+      var code = div.innerHTML;
+      tables.push( [ { "text" : tables.length + 1, "attributes" : number_attributes }, { "html" : code }, { "text" : code } ] );
+    });
+    if ( 0 === tables.length ){
+      tables.push( [ { "text" : 1 }, { "text" : "" }, { "text" : opjs.string.format( "Mismatch: {0}", expression ) } ] );
+    }
+    return opjs.document.element.array_to_table( tables, [ "No.", "HTML", "Code" ], undefined, table_attributes );
   };
   
   action.regex_matches_table = function( expression, response ){
@@ -66,7 +80,7 @@ var popup = popup || {};
       tables.push( [ { "text" : tables.length + 1, "attributes" : number_attributes }, { "html" : div.innerHTML } ] );
     });
     if ( 0 === tables.length ){
-      tables.push( [ { "text" : 1 }, { "text" : opjs.string.format( "Unmatched: {0}", expression ) } ] );
+      tables.push( [ { "text" : 1 }, { "text" : opjs.string.format( "Mismatch: {0}", expression ) } ] );
     }
     return opjs.document.element.array_to_table( tables, [ "No.", "Matches" ], undefined, table_attributes );
   };

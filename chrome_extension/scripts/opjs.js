@@ -619,7 +619,7 @@ opjs.Log.prototype.write = function( type, msg ){};
   xpath.html = function( expression, root ){
     try{
       if ( opjs.is_undef( root ) ) root = opjs.document.get();
-      return opjs.document.get().evaluate( expression, root, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null );
+      return opjs.document.get().evaluate( expression, root, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null );
     }catch ( err ){
       return { "msg" : err.toString(), "stack" : err.stack };
     }

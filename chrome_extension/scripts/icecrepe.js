@@ -30,7 +30,23 @@ opjs.document.set( document );
   };
   
   application.xpath = function( expression ){
-    return opjs.document.xpath.html( expression );
+    var results = [];
+    var itr = opjs.document.xpath.html( expression );
+    do{
+      var node = itr.iterateNext();
+      if ( null === node ) break;
+      
+      var attributes = {};
+      opjs.array.each( node.attributes, function( attr, i ){
+        attributes[ attr.nodeName ] = attr.nodeValue;
+      });
+      results.push({
+        "name"       : node.nodeName,
+        "attributes" : attributes,
+        "content"    : node.textContent,
+      });
+    }while ( true );
+    return opjs.json.encode( results );
   };
   
   application.regex = function( expression ){
@@ -39,10 +55,10 @@ opjs.document.set( document );
     var pattern = new opjs.Pattern( undefined, expression );
     var result;
     while ( result = pattern.match( text ) ){
-      results.push( opjs.json.encode( result.matches ) );
+      results.push( result.matches );
       text = result.tail;
     }
-    return results;
+    return opjs.json.encode( results );
   };
 })(icecrepe.application = icecrepe.application || {});
 
