@@ -60,7 +60,7 @@ var popup = popup || {};
     
     try{
       g_bg.call( "icecrepe.application.regex", [ expression ], function( response ){
-        if ( "" == response[ 2 ] ){
+        if ( "" === response[ 2 ] ){
           response[ 1 ] = opjs.json.decode( response[ 1 ] );
           var div = g_element.create( "div" );
           g_element.add( div, action.expression_table( expression, response[ 0 ], response[ 1 ].length ) );
