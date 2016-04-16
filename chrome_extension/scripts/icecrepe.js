@@ -37,7 +37,7 @@ opjs.document.set( document );
     var expression = args[ 0 ];
     var measure_time = new opjs.time.MeasureTime();
     var results = [];
-    var result = opjs.document.xpath.html( expression );
+    var result = opjs.document.xpath.iterators( expression );
     var errmsg = "";
     do{
       if ( ! ( "iterateNext" in result ) ){

@@ -637,7 +637,7 @@ opjs.Log.prototype.write = function( type, msg ){};
 })(opjs.document.element = opjs.document.element || {});
 
 (function( xpath ){
-  xpath.html = function( expression, root ){
+  xpath.iterators = function( expression, root ){
     try{
       if ( opjs.is_undef( root ) ) root = opjs.document.get();
       return opjs.document.get().evaluate( expression, root, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null );
