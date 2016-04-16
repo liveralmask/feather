@@ -1,109 +1,142 @@
 //alert( "popup" );
 
-var bg = chrome.extension.getBackgroundPage();
 opjs.document.set( document );
-var table_attributes = {
-  "table" : {
-    "style" : "border: thin solid gray; border-collapse: collapse; margin: 5px"
-  },
-  "head" : {
-    "style" : "border: thin solid gray"
-  },
-  "foot" : {
-    "style" : "border: thin solid gray"
-  },
-  "body" : {
-    "style" : "border: thin solid gray"
+
+var g_bg = chrome.extension.getBackgroundPage();
+var g_element = opjs.document.element;
+var g_event = opjs.document.event;
+var g_attributes = {
+  "text_center" : { "style" : "text-align: center" },
+  "tables"      : {
+    "table" : { "style" : "border: thin solid gray; border-collapse: collapse; margin: 5px" },
+    "head"  : { "style" : "border: thin solid gray" },
+    "foot"  : { "style" : "border: thin solid gray" },
+    "body"  : { "style" : "border: thin solid gray" }
   }
-};
-var number_attributes = {
-  "style" : "text-align: center"
 };
 
 var popup = popup || {};
 
 (function( action ){
   action.expression = function(){
-    return opjs.document.element.get( "icecrepe.expression" ).value;
+    return g_element.get( "icecrepe.expression" ).value;
   };
   
   action.clear = function(){
-    bg.call( "icecrepe.application.clear", [ "icecrepe.result" ], function( response ){} );
+    g_bg.call( "icecrepe.application.clear", [ "icecrepe.result" ], function( response ){} );
+  };
+  
+  action.insert_result = function( value ){
+    if ( "text" in value ){
+      var div = g_element.create( "div" );
+      g_element.add( div, g_element.create( "text", {}, { "text" : value.text } ) );
+      value.html = div.innerHTML;
+    }
+    g_bg.call( "icecrepe.application.insert_result", [ "icecrepe.result", value.html ], function( response ){} );
   };
   
   action.xpath = function( expression ){
-    bg.call( "icecrepe.application.xpath", [ expression ], function( response ){
-      var div = opjs.document.element.create( "div" );
-      opjs.document.element.add( div, action.expression_table( expression ) );
-      opjs.document.element.add( div, action.xpath_matches_table( expression, opjs.json.decode( response ) ) );
-      bg.call( "icecrepe.application.insert_result", [ "icecrepe.result", div.innerHTML ], function( response ){} );
-    } );
+    action.insert_result( { "text" : opjs.string.format( "xpath: {0}", expression ) } );
+    
+    try{
+      g_bg.call( "icecrepe.application.xpath", [ expression ], function( response ){
+        if ( "" === response[ 2 ] ){
+          response[ 1 ] = opjs.json.decode( response[ 1 ] );
+          var div = g_element.create( "div" );
+          g_element.add( div, action.expression_table( expression, response[ 0 ], response[ 1 ].length ) );
+          g_element.add( div, action.xpath_matches_table( expression, response[ 1 ] ) );
+          action.insert_result( { "html" : div.innerHTML } );
+        }else{
+          action.insert_result( { "text" : response[ 2 ] } );
+        }
+      } );
+    }catch ( err ){
+      action.insert_result( { "text" : opjs.string.format( "{0}\n{1}", err.toString(), err.stack ) } );
+    }
   };
   
   action.regex = function( expression ){
-    bg.call( "icecrepe.application.regex", [ expression ], function( response ){
-      var div = opjs.document.element.create( "div" );
-      opjs.document.element.add( div, action.expression_table( expression ) );
-      opjs.document.element.add( div, action.regex_matches_table( expression, opjs.json.decode( response ) ) );
-      bg.call( "icecrepe.application.insert_result", [ "icecrepe.result", div.innerHTML ], function( response ){} );
-    } );
+    action.insert_result( { "text" : opjs.string.format( "regex: {0}", expression ) } );
+    
+    try{
+      g_bg.call( "icecrepe.application.regex", [ expression ], function( response ){
+        if ( "" == response[ 2 ] ){
+          response[ 1 ] = opjs.json.decode( response[ 1 ] );
+          var div = g_element.create( "div" );
+          g_element.add( div, action.expression_table( expression, response[ 0 ], response[ 1 ].length ) );
+          g_element.add( div, action.regex_matches_table( expression, response[ 1 ] ) );
+          action.insert_result( { "html" : div.innerHTML } );
+        }else{
+          action.insert_result( { "text" : response[ 2 ] } );
+        }
+      } );
+    }catch ( err ){
+      action.insert_result( { "text" : opjs.string.format( "{0}\n{1}", err.toString(), err.stack ) } );
+    }
   };
   
-  action.expression_table = function( expression ){
-    var body = [[ { "text" : "Expression" }, { "text" : expression } ]];
-    return opjs.document.element.array_to_table( body, undefined, undefined, table_attributes );
+  action.expression_table = function( expression, msec, num ){
+    var body = [[
+      { "text" : expression, "attributes" : g_attributes.text_center },
+      { "text" : opjs.string.format( "{0}(sec)", msec / 1000 ), "attributes" : g_attributes.text_center },
+      { "text" : num, "attributes" : g_attributes.text_center }
+    ]];
+    return g_element.array_to_table( body, [ "Expression", "Time", "Num" ], undefined, g_attributes.tables );
   };
   
   action.xpath_matches_table = function( expression, response ){
     var tables = [];
     opjs.array.each( response, function( result, i ){
-      var div = opjs.document.element.create( "div" );
-      opjs.document.element.add( div, opjs.document.element.create( result.name, result.attributes, { "text" : result.content } ) );
+      var div = g_element.create( "div" );
+      g_element.add( div, g_element.create( result[ 0 ], result[ 1 ], { "text" : result[ 2 ] } ) );
       var code = div.innerHTML;
-      tables.push( [ { "text" : tables.length + 1, "attributes" : number_attributes }, { "html" : code }, { "text" : code } ] );
+      tables.push( [ { "text" : tables.length + 1, "attributes" : g_attributes.text_center }, { "html" : code }, { "text" : code } ] );
     });
     if ( 0 === tables.length ){
       tables.push( [ { "text" : 1 }, { "text" : "" }, { "text" : opjs.string.format( "Mismatch: {0}", expression ) } ] );
     }
-    return opjs.document.element.array_to_table( tables, [ "No.", "HTML", "Code" ], undefined, table_attributes );
+    return g_element.array_to_table( tables, [ "No.", "HTML", "Code" ], undefined, g_attributes.tables );
   };
   
   action.regex_matches_table = function( expression, response ){
     var tables = [];
     opjs.array.each( response, function( matches, i ){
-      var div = opjs.document.element.create( "div" );
+      var div = g_element.create( "div" );
       var body = [];
-      opjs.array.each( opjs.json.decode( matches ), function( match, i ){
-        body.push( [ { "text" : i, "attributes" : number_attributes }, { "text" : match } ] );
+      opjs.array.each( matches, function( match, i ){
+        body.push( [ { "text" : i, "attributes" : g_attributes.text_center }, { "text" : match } ] );
       });
-      opjs.document.element.add( div, opjs.document.element.array_to_table( body, undefined, undefined, table_attributes ) );
-      tables.push( [ { "text" : tables.length + 1, "attributes" : number_attributes }, { "html" : div.innerHTML } ] );
+      g_element.add( div, g_element.array_to_table( body, undefined, undefined, g_attributes.tables ) );
+      tables.push( [ { "text" : tables.length + 1, "attributes" : g_attributes.text_center }, { "html" : div.innerHTML } ] );
     });
     if ( 0 === tables.length ){
       tables.push( [ { "text" : 1 }, { "text" : opjs.string.format( "Mismatch: {0}", expression ) } ] );
     }
-    return opjs.document.element.array_to_table( tables, [ "No.", "Matches" ], undefined, table_attributes );
+    return g_element.array_to_table( tables, [ "No.", "Matches" ], undefined, g_attributes.tables );
   };
 })(popup.action = popup.action || {});
 
-opjs.document.event.add( document, "DOMContentLoaded", function(){
-  opjs.document.element.attr( opjs.document.element.get( "icecrepe.expression" ), "style", "width: 500px" );
+g_event.add( document, "DOMContentLoaded", function(){
+  g_element.attr( g_element.get( "icecrepe.expression" ), "style", "width: 500px" );
+  g_element.attr( g_element.get( "icecrepe.xpath" ), "style", "width: 50px" );
+  g_element.attr( g_element.get( "icecrepe.regex" ), "style", "width: 50px" );
+  g_element.attr( g_element.get( "icecrepe.clear" ), "style", "width: 50px" );
   
-  opjs.document.event.add( opjs.document.element.get( "icecrepe.xpath" ), "click", function(){
+  g_event.add( g_element.get( "icecrepe.xpath" ), "click", function(){
     popup.action.clear();
     
     var expression = popup.action.expression();
     if ( "" !== expression ) popup.action.xpath( expression );
   });
   
-  opjs.document.event.add( opjs.document.element.get( "icecrepe.regex" ), "click", function(){
+  g_event.add( g_element.get( "icecrepe.regex" ), "click", function(){
     popup.action.clear();
     
     var expression = popup.action.expression();
     if ( "" !== expression ) popup.action.regex( expression );
   });
   
-  opjs.document.event.add( opjs.document.element.get( "icecrepe.clear" ), "click", function(){
+  g_event.add( g_element.get( "icecrepe.clear" ), "click", function(){
     popup.action.clear();
   });
 });

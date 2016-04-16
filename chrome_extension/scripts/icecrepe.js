@@ -30,35 +30,40 @@ opjs.document.set( document );
   };
   
   application.xpath = function( expression ){
+    var measure_time = new opjs.time.MeasureTime();
     var results = [];
-    var itr = opjs.document.xpath.html( expression );
+    var result = opjs.document.xpath.html( expression );
+    var errmsg = "";
     do{
-      var node = itr.iterateNext();
+      if ( ! ( "iterateNext" in result ) ){
+        errmsg = result.msg;
+        break;
+      }
+      
+      var node = result.iterateNext();
       if ( null === node ) break;
       
       var attributes = {};
       opjs.array.each( node.attributes, function( attr, i ){
         attributes[ attr.nodeName ] = attr.nodeValue;
       });
-      results.push({
-        "name"       : node.nodeName,
-        "attributes" : attributes,
-        "content"    : node.textContent,
-      });
+      results.push([ node.nodeName, attributes, node.textContent ]);
     }while ( true );
-    return opjs.json.encode( results );
+    return [ measure_time.update(), opjs.json.encode( results ), errmsg ];
   };
   
   application.regex = function( expression ){
+    var measure_time = new opjs.time.MeasureTime();
     var results = [];
     var text = opjs.document.element.tags( "html" )[ 0 ].innerHTML;
     var pattern = new opjs.Pattern( undefined, expression );
     var result;
-    while ( result = pattern.match( text ) ){
+    var errmsg = "";
+    while ( null !== ( result = pattern.match( text ) ) ){
       results.push( result.matches );
       text = result.tail;
     }
-    return opjs.json.encode( results );
+    return [ measure_time.update(), opjs.json.encode( results ), errmsg ];
   };
 })(icecrepe.application = icecrepe.application || {});
 

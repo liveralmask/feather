@@ -142,6 +142,9 @@ opjs.Pattern.prototype.match = function( value ){
     
     this.m_value = ( opjs.is_undef( year ) ) ? new Date() : new Date( year, month - 1, date, hour, min, sec, msec );
   };
+  time.LocalTime.prototype.value = function(){
+    return this.m_value;
+  };
   time.LocalTime.prototype.year = function(){
     return this.m_value.getFullYear();
   };
@@ -177,6 +180,23 @@ opjs.Pattern.prototype.match = function( value ){
     if ( this.month() != local_time.month() ) return false;
     if ( this.year()  != local_time.year() )  return false;
     return true;
+  };
+  
+  time.MeasureTime = function(){
+    this.start();
+  };
+  time.MeasureTime.prototype.start = function(){
+    this.m_start_time = new time.LocalTime();
+    this.m_end_time = this.m_start_time;
+    this.m_count = 0;
+  };
+  time.MeasureTime.prototype.update = function(){
+    this.m_end_time = new time.LocalTime();
+    this.m_count += 1;
+    return this.m_end_time.value() - this.m_start_time.value();
+  };
+  time.MeasureTime.prototype.count = function(){
+    return this.m_count;
   };
   
   time.local_time = function( year, month, date, hour, min, sec, msec ){

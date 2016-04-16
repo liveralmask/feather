@@ -1,8 +1,8 @@
 //alert( "background" );
 
-var bg = this;
+var g_bg = this;
 
-bg.content = function( request, callback ){
+g_bg.content = function( request, callback ){
   chrome.tabs.query( { "active" : true, "lastFocusedWindow" : true }, function( tabs ){
     var tab = tabs[ 0 ];
     
@@ -12,8 +12,8 @@ bg.content = function( request, callback ){
   });
 };
 
-bg.call = function( method, args, callback ){
-  bg.content(
+g_bg.call = function( method, args, callback ){
+  g_bg.content(
     {
       "method" : method,
       "args"   : args
