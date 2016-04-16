@@ -123,15 +123,11 @@ g_event.add( document, "DOMContentLoaded", function(){
   g_element.attr( g_element.get( "icecrepe.clear" ), "style", "width: 50px" );
   
   g_event.add( g_element.get( "icecrepe.xpath" ), "click", function(){
-    popup.action.clear();
-    
     var expression = popup.action.expression();
     if ( "" !== expression ) popup.action.xpath( expression );
   });
   
   g_event.add( g_element.get( "icecrepe.regex" ), "click", function(){
-    popup.action.clear();
-    
     var expression = popup.action.expression();
     if ( "" !== expression ) popup.action.regex( expression );
   });

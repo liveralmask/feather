@@ -6,14 +6,18 @@ var icecrepe = icecrepe || {};
 opjs.document.set( document );
 
 (function( application ){
-  application.clear = function( id ){
+  application.clear = function( args ){
+    var id = args[ 0 ];
     var result = opjs.document.element.get( id );
     if ( null !== result ){
       opjs.document.element.remove( result.parentNode, result );
     }
   };
   
-  application.insert_result = function( id, html ){
+  application.insert_result = function( args ){
+    var id = args[ 0 ];
+    var html = args[ 1 ];
+    application.clear( [ id ] );
     var body = opjs.document.get().body;
     var styles = [
       "z-index : 2147483647",
@@ -29,7 +33,8 @@ opjs.document.set( document );
     body.innerHTML = opjs.string.format( "{0}<div id='{1}' style='{2}'>{3}</div>", body.innerHTML, id, styles.join( ";" ), html );
   };
   
-  application.xpath = function( expression ){
+  application.xpath = function( args ){
+    var expression = args[ 0 ];
     var measure_time = new opjs.time.MeasureTime();
     var results = [];
     var result = opjs.document.xpath.html( expression );
@@ -52,7 +57,8 @@ opjs.document.set( document );
     return [ measure_time.update(), opjs.json.encode( results ), errmsg ];
   };
   
-  application.regex = function( expression ){
+  application.regex = function( args ){
+    var expression = args[ 0 ];
     var measure_time = new opjs.time.MeasureTime();
     var results = [];
     var text = opjs.document.element.tags( "html" )[ 0 ].innerHTML;
