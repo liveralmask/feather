@@ -11,9 +11,12 @@ WebページをXPathや正規表現で検索した結果を表示するChrome Ex
 
 ### インストール
 1. ブラウザに chrome://extensions を入力
+![01.png](https://github.com/liveralmask/icecrepe/blob/master/readme/chrome_extension/install/01.png)
 2. パッケージ化されていない拡張機能を読み込む ボタンをクリックし、フォルダを指定
+![02.png](https://github.com/liveralmask/icecrepe/blob/master/readme/chrome_extension/install/02.png)
 
-### 使い方
+### [使い方](https://raw.githubusercontent.com/liveralmask/icecrepe/master/readme/chrome_extension/usage/usage_800x600.mp4)
+
 1. アイコンをクリックし、Extension用ページを表示
 
 #### XPath
