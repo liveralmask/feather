@@ -16,7 +16,7 @@ WebページをXPathや正規表現で検索した結果を表示するChrome Ex
 ![02.png](https://github.com/liveralmask/icecrepe/blob/master/readme/chrome_extension/install/02.png)
 
 ### 使い方
-![usage_800x600.gif](https://raw.githubusercontent.com/liveralmask/icecrepe/master/readme/chrome_extension/usage/usage_800x600.gif)
+![usage.gif](https://raw.githubusercontent.com/liveralmask/icecrepe/master/readme/chrome_extension/usage/usage.gif)
 
 1. アイコンをクリックし、Extension用ページを表示
 
