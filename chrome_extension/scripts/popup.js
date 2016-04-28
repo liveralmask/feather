@@ -8,10 +8,10 @@ var g_event = opjs.document.event;
 var g_attributes = {
   "text_center" : { "style" : "text-align: center" },
   "tables"      : {
-    "table" : { "style" : "border: thin solid gray; border-collapse: collapse; margin: 5px" },
-    "head"  : { "style" : "border: thin solid gray" },
-    "foot"  : { "style" : "border: thin solid gray" },
-    "body"  : { "style" : "border: thin solid gray" }
+    "table" : { "style" : "border: thin solid gray; border-collapse: collapse; margin: 5px; color: white" },
+    "head"  : { "style" : "border: thin solid gray; color: white" },
+    "foot"  : { "style" : "border: thin solid gray; color: white" },
+    "body"  : { "style" : "border: thin solid gray; color: white" }
   }
 };
 
@@ -116,7 +116,7 @@ var popup = popup || {};
   };
 })(popup.action = popup.action || {});
 
-g_event.add( document, "DOMContentLoaded", function(){
+g_event.add( opjs.document.get(), "DOMContentLoaded", function(){
   g_element.attr( g_element.get( "icecrepe.expression" ), "style", "width: 500px" );
   g_element.attr( g_element.get( "icecrepe.xpath" ), "style", "width: 50px" );
   g_element.attr( g_element.get( "icecrepe.regex" ), "style", "width: 50px" );
