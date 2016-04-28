@@ -52,7 +52,7 @@ opjs.document.set( document );
       opjs.array.each( node.attributes, function( attr, i ){
         attributes[ attr.nodeName ] = attr.nodeValue;
       });
-      results.push([ node.nodeName, attributes, node.textContent ]);
+      results.push([ node.nodeName, attributes, node.innerHTML ]);
     }while ( true );
     return [ measure_time.update(), opjs.json.encode( results ), errmsg ];
   };

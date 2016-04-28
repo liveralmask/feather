@@ -88,7 +88,7 @@ var popup = popup || {};
     var tables = [];
     opjs.array.each( response, function( result, i ){
       var div = g_element.create( "div" );
-      g_element.add( div, g_element.create( result[ 0 ], result[ 1 ], { "text" : result[ 2 ] } ) );
+      g_element.add( div, g_element.create( result[ 0 ], result[ 1 ], { "html" : result[ 2 ] } ) );
       var code = div.innerHTML;
       tables.push( [ { "text" : tables.length + 1, "attributes" : g_attributes.text_center }, { "html" : code }, { "text" : code } ] );
     });
